@@ -1,0 +1,21 @@
+FROM node:20-alpine
+
+WORKDIR /app
+
+# Installa dipendenze di sistema
+RUN apk add --no-cache git
+
+# Copia package.json
+COPY package*.json ./
+
+# Installa dipendenze
+RUN npm install
+
+# Copia il codice
+COPY . .
+
+# Espone porta Vite
+EXPOSE 5173
+
+# Comando di avvio
+CMD ["npm", "run", "dev", "--", "--host", "0.0.0.0"]
