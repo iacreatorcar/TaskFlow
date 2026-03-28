@@ -24,7 +24,8 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Separator } from '@/components/ui/separator';
 import { useStore } from '@/store/useStore';
 import type { Ticket, TicketStatus, TicketPriority, TicketType } from '@/types';
-import { TYPE_LABELS, PRIORITY_COLORS } from '@/types';
+import { PRIORITY_COLORS } from '@/types';
+// TYPE_LABELS non serve più perché usiamo le traduzioni
 
 interface TicketDetailProps {
   ticket: Ticket;

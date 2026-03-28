@@ -26,12 +26,12 @@ export function Layout() {
   }
 
   // Mappa delle viste per i titoli (opzionale, se vuoi passare il titolo alla sidebar)
-  const viewTitles: Record<View, string> = {
-    dashboard: t('dashboard'),
-    board: t('board'),
-    projects: t('progetti'),
-    team: t('team'),
-    settings: t('impostazioni'),
+  const viewTitles: Record<View, string> = { // const viewTitles: Record<View, string> = {
+//   dashboard: t('dashboard'),
+//   board: t('board'),
+//   projects: t('progetti'),
+//   team: t('team'),
+//   settings: t('impostazioni'),
   };
 
   const renderView = () => {
