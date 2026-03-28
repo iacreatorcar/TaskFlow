@@ -25,7 +25,7 @@ import { Separator } from '@/components/ui/separator';
 import { useStore } from '@/store/useStore';
 import type { Ticket, TicketStatus, TicketPriority, TicketType } from '@/types';
 import { PRIORITY_COLORS } from '@/types';
-// TYPE_LABELS non serve più perché usiamo le traduzioni
+// TYPE_LABELS non serve più perché usiamo le traduzioni dinamiche    
 
 interface TicketDetailProps {
   ticket: Ticket;
@@ -148,7 +148,7 @@ export function TicketDetail({ ticket, open, onOpenChange }: TicketDetailProps) 
                 >
                   {priorityLabels[ticket.priority]}
                 </Badge>
-                <Badge variant="secondary">{typeLabels[ticket.type]}</Badge>
+               <Badge variant="secondary">{typeLabels[ticket.type]}</Badge>
               </div>
               <DialogTitle className="text-xl font-semibold">
                 {isEditing ? (
