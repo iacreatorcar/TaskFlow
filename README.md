@@ -10,7 +10,7 @@
 A modern, full-featured ticketing system built with **React**, **TypeScript**, and **Supabase**.  
 Designed for teams to track tasks, manage projects, and collaborate efficiently.
 
-🔗 **Live Demo:** *Coming soon on Vercel*  
+🔗 **Live Demo:** [https://task-flow-ivory-seven.vercel.app](https://task-flow-ivory-seven.vercel.app)
 📁 **Repository:** [iacreatorcar/TaskFlow](https://github.com/iacreatorcar/TaskFlow)
 
 ---
