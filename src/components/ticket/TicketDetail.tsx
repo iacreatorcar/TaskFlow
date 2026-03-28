@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { X, History, Save } from 'lucide-react';
 import {
   Dialog,
@@ -31,28 +32,41 @@ interface TicketDetailProps {
   onOpenChange: (open: boolean) => void;
 }
 
-const statusLabels: Record<TicketStatus, string> = {
-  backlog: 'Backlog',
-  todo: 'Da Fare',
-  in_progress: 'In Corso',
-  review: 'In Revisione',
-  done: 'Completato',
-};
+// Mappe per le traduzioni
+const getStatusLabels = (t: (key: string) => string): Record<TicketStatus, string> => ({
+  backlog: t('backlog'),
+  todo: t('todo'),
+  in_progress: t('in_progress'),
+  review: t('review'),
+  done: t('done'),
+});
 
-const priorityLabels: Record<TicketPriority, string> = {
-  low: 'Bassa',
-  medium: 'Media',
-  high: 'Alta',
-  critical: 'Critica',
-};
+const getPriorityLabels = (t: (key: string) => string): Record<TicketPriority, string> => ({
+  low: t('priorita_bassa'),
+  medium: t('priorita_media'),
+  high: t('priorita_alta'),
+  critical: t('priorita_critica'),
+});
+
+const getTypeLabels = (t: (key: string) => string): Record<TicketType, string> => ({
+  bug: t('tipo_bug'),
+  feature: t('tipo_feature'),
+  task: t('tipo_task'),
+  improvement: t('tipo_miglioramento'),
+});
 
 export function TicketDetail({ ticket, open, onOpenChange }: TicketDetailProps) {
+  const { t, i18n } = useTranslation();
   const { users, projects, updateTicket, addComment, getCommentsByTicket, getActivitiesByTicket, currentUser } = useStore();
   
   const [editedTicket, setEditedTicket] = useState<Ticket>(ticket);
   const [newComment, setNewComment] = useState('');
   const [newLabel, setNewLabel] = useState('');
   const [isEditing, setIsEditing] = useState(false);
+
+  const statusLabels = getStatusLabels(t);
+  const priorityLabels = getPriorityLabels(t);
+  const typeLabels = getTypeLabels(t);
 
   const project = projects.find((p) => p.id === ticket.projectId);
   const assignee = users.find((u) => u.id === ticket.assigneeId);
@@ -92,13 +106,29 @@ export function TicketDetail({ ticket, open, onOpenChange }: TicketDetailProps) 
   };
 
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleString('it-IT', {
+    const date = new Date(dateString);
+    const locale = i18n.language === 'it' ? 'it-IT' : 'en-US';
+    return date.toLocaleString(locale, {
       day: 'numeric',
       month: 'short',
       year: 'numeric',
       hour: '2-digit',
       minute: '2-digit',
     });
+  };
+
+  const getActionText = (action: string, oldValue?: string, newValue?: string) => {
+    switch (action) {
+      case 'created':
+        return t('ha_creato_il_ticket');
+      case 'status_changed':
+        return t('ha_cambiato_stato', {
+          old: statusLabels[oldValue as TicketStatus] || oldValue,
+          new: statusLabels[newValue as TicketStatus] || newValue
+        });
+      default:
+        return action;
+    }
   };
 
   return (
@@ -117,7 +147,7 @@ export function TicketDetail({ ticket, open, onOpenChange }: TicketDetailProps) 
                 >
                   {priorityLabels[ticket.priority]}
                 </Badge>
-                <Badge variant="secondary">{TYPE_LABELS[ticket.type]}</Badge>
+                <Badge variant="secondary">{typeLabels[ticket.type]}</Badge>
               </div>
               <DialogTitle className="text-xl font-semibold">
                 {isEditing ? (
@@ -136,16 +166,16 @@ export function TicketDetail({ ticket, open, onOpenChange }: TicketDetailProps) 
                 <>
                   <Button variant="outline" size="sm" onClick={() => { setIsEditing(false); setEditedTicket(ticket); }}>
                     <X className="w-4 h-4 mr-1" />
-                    Annulla
+                    {t('annulla')}
                   </Button>
                   <Button size="sm" onClick={handleSave}>
                     <Save className="w-4 h-4 mr-1" />
-                    Salva
+                    {t('salva')}
                   </Button>
                 </>
               ) : (
                 <Button variant="outline" size="sm" onClick={() => setIsEditing(true)}>
-                  Modifica
+                  {t('modifica')}
                 </Button>
               )}
             </div>
@@ -157,34 +187,34 @@ export function TicketDetail({ ticket, open, onOpenChange }: TicketDetailProps) 
           <div className="flex-1 overflow-y-auto pr-2">
             <Tabs defaultValue="details" className="w-full">
               <TabsList className="mb-4">
-                <TabsTrigger value="details">Dettagli</TabsTrigger>
+                <TabsTrigger value="details">{t('dettagli')}</TabsTrigger>
                 <TabsTrigger value="comments">
-                  Commenti ({comments.length})
+                  {t('commenti')} ({comments.length})
                 </TabsTrigger>
-                <TabsTrigger value="activity">Attività</TabsTrigger>
+                <TabsTrigger value="activity">{t('attivita')}</TabsTrigger>
               </TabsList>
 
               <TabsContent value="details" className="space-y-4">
                 {/* Descrizione */}
                 <div>
-                  <Label className="text-sm font-medium text-gray-700 mb-2 block">Descrizione</Label>
+                  <Label className="text-sm font-medium text-gray-700 mb-2 block">{t('descrizione')}</Label>
                   {isEditing ? (
                     <Textarea
                       value={editedTicket.description}
                       onChange={(e) => setEditedTicket({ ...editedTicket, description: e.target.value })}
                       rows={6}
-                      placeholder="Aggiungi una descrizione..."
+                      placeholder={t('aggiungi_descrizione')}
                     />
                   ) : (
                     <div className="text-gray-600 bg-gray-50 p-3 rounded-md">
-                      {ticket.description || 'Nessuna descrizione'}
+                      {ticket.description || t('nessuna_descrizione')}
                     </div>
                   )}
                 </div>
 
                 {/* Labels */}
                 <div>
-                  <Label className="text-sm font-medium text-gray-700 mb-2 block">Etichette</Label>
+                  <Label className="text-sm font-medium text-gray-700 mb-2 block">{t('etichette')}</Label>
                   <div className="flex flex-wrap gap-2 mb-2">
                     {editedTicket.labels.map((label) => (
                       <Badge key={label} variant="secondary" className="flex items-center gap-1">
@@ -205,11 +235,11 @@ export function TicketDetail({ ticket, open, onOpenChange }: TicketDetailProps) 
                       <Input
                         value={newLabel}
                         onChange={(e) => setNewLabel(e.target.value)}
-                        placeholder="Nuova etichetta"
+                        placeholder={t('nuova_etichetta')}
                         className="w-40"
                         onKeyPress={(e) => e.key === 'Enter' && handleAddLabel()}
                       />
-                      <Button size="sm" onClick={handleAddLabel}>Aggiungi</Button>
+                      <Button size="sm" onClick={handleAddLabel}>{t('aggiungi')}</Button>
                     </div>
                   )}
                 </div>
@@ -227,12 +257,12 @@ export function TicketDetail({ ticket, open, onOpenChange }: TicketDetailProps) 
                       <Textarea
                         value={newComment}
                         onChange={(e) => setNewComment(e.target.value)}
-                        placeholder="Aggiungi un commento..."
+                        placeholder={t('aggiungi_commento')}
                         rows={3}
                       />
                       <div className="mt-2 flex justify-end">
                         <Button size="sm" onClick={handleAddComment} disabled={!newComment.trim()}>
-                          Commenta
+                          {t('commenta')}
                         </Button>
                       </div>
                     </div>
@@ -244,7 +274,7 @@ export function TicketDetail({ ticket, open, onOpenChange }: TicketDetailProps) 
                 {/* Lista commenti */}
                 <div className="space-y-4">
                   {comments.length === 0 ? (
-                    <p className="text-gray-500 text-center py-4">Nessun commento</p>
+                    <p className="text-gray-500 text-center py-4">{t('nessun_commento')}</p>
                   ) : (
                     comments.map((comment) => {
                       const author = users.find((u) => u.id === comment.authorId);
@@ -273,7 +303,7 @@ export function TicketDetail({ ticket, open, onOpenChange }: TicketDetailProps) 
               <TabsContent value="activity">
                 <div className="space-y-3">
                   {activities.length === 0 ? (
-                    <p className="text-gray-500 text-center py-4">Nessuna attività</p>
+                    <p className="text-gray-500 text-center py-4">{t('nessuna_attivita')}</p>
                   ) : (
                     activities.map((activity) => {
                       const user = users.find((u) => u.id === activity.userId);
@@ -283,10 +313,7 @@ export function TicketDetail({ ticket, open, onOpenChange }: TicketDetailProps) 
                           <div>
                             <span className="font-medium">{user?.name}</span>{' '}
                             <span className="text-gray-600">
-                              {activity.action === 'created' && 'ha creato il ticket'}
-                              {activity.action === 'status_changed' && (
-                                <>ha cambiato stato da <strong>{statusLabels[activity.oldValue as TicketStatus]}</strong> a <strong>{statusLabels[activity.newValue as TicketStatus]}</strong></>
-                              )}
+                              {getActionText(activity.action, activity.oldValue, activity.newValue)}
                             </span>
                             <div className="text-xs text-gray-400 mt-0.5">
                               {formatDate(activity.createdAt)}
@@ -305,7 +332,7 @@ export function TicketDetail({ ticket, open, onOpenChange }: TicketDetailProps) 
           <div className="w-64 flex-shrink-0 space-y-4 border-l pl-6 overflow-y-auto">
             {/* Stato */}
             <div>
-              <Label className="text-xs text-gray-500 uppercase font-semibold mb-1 block">Stato</Label>
+              <Label className="text-xs text-gray-500 uppercase font-semibold mb-1 block">{t('stato')}</Label>
               {isEditing ? (
                 <Select
                   value={editedTicket.status}
@@ -327,7 +354,7 @@ export function TicketDetail({ ticket, open, onOpenChange }: TicketDetailProps) 
 
             {/* Assegnatario */}
             <div>
-              <Label className="text-xs text-gray-500 uppercase font-semibold mb-1 block">Assegnatario</Label>
+              <Label className="text-xs text-gray-500 uppercase font-semibold mb-1 block">{t('assegnatario')}</Label>
               {isEditing ? (
                 <Select
                   value={editedTicket.assigneeId || 'unassigned'}
@@ -337,7 +364,7 @@ export function TicketDetail({ ticket, open, onOpenChange }: TicketDetailProps) 
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="unassigned">Non assegnato</SelectItem>
+                    <SelectItem value="unassigned">{t('non_assegnato')}</SelectItem>
                     {users.map((user) => (
                       <SelectItem key={user.id} value={user.id}>{user.name}</SelectItem>
                     ))}
@@ -354,7 +381,7 @@ export function TicketDetail({ ticket, open, onOpenChange }: TicketDetailProps) 
                       <span className="text-sm">{assignee.name}</span>
                     </>
                   ) : (
-                    <span className="text-sm text-gray-500">Non assegnato</span>
+                    <span className="text-sm text-gray-500">{t('non_assegnato')}</span>
                   )}
                 </div>
               )}
@@ -362,7 +389,7 @@ export function TicketDetail({ ticket, open, onOpenChange }: TicketDetailProps) 
 
             {/* Reporter */}
             <div>
-              <Label className="text-xs text-gray-500 uppercase font-semibold mb-1 block">Creatore</Label>
+              <Label className="text-xs text-gray-500 uppercase font-semibold mb-1 block">{t('creatore')}</Label>
               <div className="flex items-center gap-2">
                 {reporter && (
                   <>
@@ -380,7 +407,7 @@ export function TicketDetail({ ticket, open, onOpenChange }: TicketDetailProps) 
 
             {/* Priorità */}
             <div>
-              <Label className="text-xs text-gray-500 uppercase font-semibold mb-1 block">Priorità</Label>
+              <Label className="text-xs text-gray-500 uppercase font-semibold mb-1 block">{t('priorita')}</Label>
               {isEditing ? (
                 <Select
                   value={editedTicket.priority}
@@ -402,7 +429,7 @@ export function TicketDetail({ ticket, open, onOpenChange }: TicketDetailProps) 
 
             {/* Tipo */}
             <div>
-              <Label className="text-xs text-gray-500 uppercase font-semibold mb-1 block">Tipo</Label>
+              <Label className="text-xs text-gray-500 uppercase font-semibold mb-1 block">{t('tipo')}</Label>
               {isEditing ? (
                 <Select
                   value={editedTicket.type}
@@ -412,14 +439,14 @@ export function TicketDetail({ ticket, open, onOpenChange }: TicketDetailProps) 
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="bug">Bug</SelectItem>
-                    <SelectItem value="feature">Feature</SelectItem>
-                    <SelectItem value="task">Task</SelectItem>
-                    <SelectItem value="improvement">Miglioramento</SelectItem>
+                    <SelectItem value="bug">{t('tipo_bug')}</SelectItem>
+                    <SelectItem value="feature">{t('tipo_feature')}</SelectItem>
+                    <SelectItem value="task">{t('tipo_task')}</SelectItem>
+                    <SelectItem value="improvement">{t('tipo_miglioramento')}</SelectItem>
                   </SelectContent>
                 </Select>
               ) : (
-                <div className="text-sm">{TYPE_LABELS[ticket.type]}</div>
+                <div className="text-sm">{typeLabels[ticket.type]}</div>
               )}
             </div>
 
@@ -427,7 +454,7 @@ export function TicketDetail({ ticket, open, onOpenChange }: TicketDetailProps) 
 
             {/* Ore stimate */}
             <div>
-              <Label className="text-xs text-gray-500 uppercase font-semibold mb-1 block">Ore Stimate</Label>
+              <Label className="text-xs text-gray-500 uppercase font-semibold mb-1 block">{t('ore_stimate')}</Label>
               {isEditing ? (
                 <Input
                   type="number"
@@ -442,7 +469,7 @@ export function TicketDetail({ ticket, open, onOpenChange }: TicketDetailProps) 
 
             {/* Data scadenza */}
             <div>
-              <Label className="text-xs text-gray-500 uppercase font-semibold mb-1 block">Scadenza</Label>
+              <Label className="text-xs text-gray-500 uppercase font-semibold mb-1 block">{t('scadenza')}</Label>
               {isEditing ? (
                 <Input
                   type="date"
@@ -460,8 +487,8 @@ export function TicketDetail({ ticket, open, onOpenChange }: TicketDetailProps) 
 
             {/* Date creazione/modifica */}
             <div className="text-xs text-gray-500 space-y-1">
-              <div>Creato: {formatDate(ticket.createdAt)}</div>
-              <div>Modificato: {formatDate(ticket.updatedAt)}</div>
+              <div>{t('creato')}: {formatDate(ticket.createdAt)}</div>
+              <div>{t('modificato')}: {formatDate(ticket.updatedAt)}</div>
             </div>
           </div>
         </div>

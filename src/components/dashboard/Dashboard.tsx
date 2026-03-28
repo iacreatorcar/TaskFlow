@@ -1,4 +1,5 @@
 import { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   BarChart,
   Bar,
@@ -26,6 +27,7 @@ import { useStore } from '@/store/useStore';
 import { PRIORITY_COLORS } from '@/types';
 
 export function Dashboard() {
+  const { t, i18n } = useTranslation();
   const { tickets, projects, currentProjectId } = useStore();
 
   const currentProject = projects.find((p) => p.id === currentProjectId);
@@ -70,25 +72,25 @@ export function Dashboard() {
   }, [tickets, currentProjectId]);
 
   const statusData = [
-    { name: 'Backlog', value: stats.backlog, color: '#6B7280' },
-    { name: 'Da Fare', value: stats.todo, color: '#3B82F6' },
-    { name: 'In Corso', value: stats.inProgress, color: '#F59E0B' },
-    { name: 'In Revisione', value: stats.review, color: '#8B5CF6' },
-    { name: 'Completato', value: stats.done, color: '#10B981' },
+    { name: t('backlog'), value: stats.backlog, color: '#6B7280' },
+    { name: t('todo'), value: stats.todo, color: '#3B82F6' },
+    { name: t('in_progress'), value: stats.inProgress, color: '#F59E0B' },
+    { name: t('review'), value: stats.review, color: '#8B5CF6' },
+    { name: t('done'), value: stats.done, color: '#10B981' },
   ];
 
   const priorityData = [
-    { name: 'Bassa', value: stats.byPriority.low, color: PRIORITY_COLORS.low },
-    { name: 'Media', value: stats.byPriority.medium, color: PRIORITY_COLORS.medium },
-    { name: 'Alta', value: stats.byPriority.high, color: PRIORITY_COLORS.high },
-    { name: 'Critica', value: stats.byPriority.critical, color: PRIORITY_COLORS.critical },
+    { name: t('priorita_bassa'), value: stats.byPriority.low, color: PRIORITY_COLORS.low },
+    { name: t('priorita_media'), value: stats.byPriority.medium, color: PRIORITY_COLORS.medium },
+    { name: t('priorita_alta'), value: stats.byPriority.high, color: PRIORITY_COLORS.high },
+    { name: t('priorita_critica'), value: stats.byPriority.critical, color: PRIORITY_COLORS.critical },
   ];
 
   const typeData = [
-    { name: 'Bug', value: stats.byType.bug },
-    { name: 'Feature', value: stats.byType.feature },
-    { name: 'Task', value: stats.byType.task },
-    { name: 'Miglioramento', value: stats.byType.improvement },
+    { name: t('tipo_bug'), value: stats.byType.bug },
+    { name: t('tipo_feature'), value: stats.byType.feature },
+    { name: t('tipo_task'), value: stats.byType.task },
+    { name: t('tipo_miglioramento'), value: stats.byType.improvement },
   ];
 
   const recentTickets = useMemo(() => {
@@ -98,15 +100,20 @@ export function Dashboard() {
       .slice(0, 5);
   }, [tickets, currentProjectId]);
 
+  // Funzione per formattare la data in base alla lingua
+  const formatDate = (date: string) => {
+    return new Date(date).toLocaleDateString(i18n.language === 'it' ? 'it-IT' : 'en-US');
+  };
+
   return (
     <div className="space-y-6">
       {/* Header */}
       <div>
         <h1 className="text-2xl font-bold text-gray-900">
-          Dashboard {currentProject ? `- ${currentProject.name}` : 'Generale'}
+          {t('dashboard')} {currentProject ? `- ${currentProject.name}` : t('generale')}
         </h1>
         <p className="text-gray-500 text-sm">
-          Panoramica delle attività e statistiche del progetto
+          {t('panoramica_attivita')}
         </p>
       </div>
 
@@ -114,46 +121,46 @@ export function Dashboard() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Totale Ticket</CardTitle>
+            <CardTitle className="text-sm font-medium">{t('totale_ticket')}</CardTitle>
             <Ticket className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{stats.total}</div>
             <p className="text-xs text-muted-foreground">
-              nel progetto corrente
+              {t('nel_progetto_corrente')}
             </p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Completati</CardTitle>
+            <CardTitle className="text-sm font-medium">{t('completati')}</CardTitle>
             <CheckCircle2 className="h-4 w-4 text-green-600" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{stats.done}</div>
             <p className="text-xs text-muted-foreground">
-              {stats.completionRate}% del totale
+              {stats.completionRate}% {t('del_totale')}
             </p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">In Corso</CardTitle>
+            <CardTitle className="text-sm font-medium">{t('in_corso')}</CardTitle>
             <Clock className="h-4 w-4 text-yellow-600" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{stats.inProgress}</div>
             <p className="text-xs text-muted-foreground">
-              attivamente lavorati
+              {t('attivamente_lavorati')}
             </p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Priorità Alta</CardTitle>
+            <CardTitle className="text-sm font-medium">{t('priorita_alta_label')}</CardTitle>
             <AlertCircle className="h-4 w-4 text-red-600" />
           </CardHeader>
           <CardContent>
@@ -161,7 +168,7 @@ export function Dashboard() {
               {stats.byPriority.high + stats.byPriority.critical}
             </div>
             <p className="text-xs text-muted-foreground">
-              richiedono attenzione
+              {t('richiedono_attenzione')}
             </p>
           </CardContent>
         </Card>
@@ -172,7 +179,7 @@ export function Dashboard() {
         {/* Stato Ticket */}
         <Card>
           <CardHeader>
-            <CardTitle>Ticket per Stato</CardTitle>
+            <CardTitle>{t('ticket_per_stato')}</CardTitle>
           </CardHeader>
           <CardContent>
             <ResponsiveContainer width="100%" height={250}>
@@ -194,7 +201,7 @@ export function Dashboard() {
         {/* Priorità */}
         <Card>
           <CardHeader>
-            <CardTitle>Ticket per Priorità</CardTitle>
+            <CardTitle>{t('ticket_per_priorita')}</CardTitle>
           </CardHeader>
           <CardContent>
             <ResponsiveContainer width="100%" height={250}>
@@ -224,7 +231,7 @@ export function Dashboard() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <Card>
           <CardHeader>
-            <CardTitle>Ticket per Tipo</CardTitle>
+            <CardTitle>{t('ticket_per_tipo')}</CardTitle>
           </CardHeader>
           <CardContent>
             <ResponsiveContainer width="100%" height={200}>
@@ -242,12 +249,12 @@ export function Dashboard() {
         {/* Ticket Recenti */}
         <Card>
           <CardHeader>
-            <CardTitle>Ticket Recenti</CardTitle>
+            <CardTitle>{t('ticket_recenti')}</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-3">
               {recentTickets.length === 0 ? (
-                <p className="text-gray-500 text-center py-4">Nessun ticket</p>
+                <p className="text-gray-500 text-center py-4">{t('nessun_ticket')}</p>
               ) : (
                 recentTickets.map((ticket) => (
                   <div
@@ -257,7 +264,7 @@ export function Dashboard() {
                     <div>
                       <p className="font-medium text-sm">{ticket.title}</p>
                       <p className="text-xs text-gray-500">
-                        {new Date(ticket.createdAt).toLocaleDateString('it-IT')}
+                        {formatDate(ticket.createdAt)}
                       </p>
                     </div>
                     <div
@@ -267,7 +274,7 @@ export function Dashboard() {
                         color: PRIORITY_COLORS[ticket.priority],
                       }}
                     >
-                      {ticket.priority}
+                      {t(`priorita_${ticket.priority}`)}
                     </div>
                   </div>
                 ))
@@ -281,29 +288,29 @@ export function Dashboard() {
       {currentProject && (
         <Card>
           <CardHeader>
-            <CardTitle>Informazioni Progetto</CardTitle>
+            <CardTitle>{t('informazioni_progetto')}</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div className="flex items-center gap-3">
                 <FolderOpen className="w-5 h-5 text-gray-400" />
                 <div>
-                  <p className="text-sm font-medium">Nome</p>
+                  <p className="text-sm font-medium">{t('nome')}</p>
                   <p className="text-sm text-gray-500">{currentProject.name}</p>
                 </div>
               </div>
               <div className="flex items-center gap-3">
                 <TrendingUp className="w-5 h-5 text-gray-400" />
                 <div>
-                  <p className="text-sm font-medium">Key</p>
+                  <p className="text-sm font-medium">{t('key')}</p>
                   <p className="text-sm text-gray-500">{currentProject.key}</p>
                 </div>
               </div>
               <div className="flex items-center gap-3">
                 <Users className="w-5 h-5 text-gray-400" />
                 <div>
-                  <p className="text-sm font-medium">Membri</p>
-                  <p className="text-sm text-gray-500">{currentProject.members.length} utenti</p>
+                  <p className="text-sm font-medium">{t('membri')}</p>
+                  <p className="text-sm text-gray-500">{currentProject.members.length} {t('utenti')}</p>
                 </div>
               </div>
             </div>

@@ -1,4 +1,5 @@
 import { useState, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { DragDropContext, Droppable, type DropResult } from '@hello-pangea/dnd';
 import { Plus, Filter, Search } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -23,6 +24,7 @@ import { useStore } from '@/store/useStore';
 import { DEFAULT_COLUMNS, type TicketStatus } from '@/types';
 
 export function KanbanBoard() {
+  const { t } = useTranslation();
   const { tickets, projects, currentProjectId, users, moveTicket } = useStore();
   const [searchQuery, setSearchQuery] = useState('');
   const [filterAssignee, setFilterAssignee] = useState<string>('all');
@@ -77,7 +79,6 @@ export function KanbanBoard() {
       grouped[ticket.status].push(ticket);
     });
 
-    // Ordina per data di aggiornamento (più recente prima)
     Object.keys(grouped).forEach((key) => {
       grouped[key as TicketStatus].sort(
         (a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
@@ -105,11 +106,20 @@ export function KanbanBoard() {
 
   const hasFilters = searchQuery || filterAssignee !== 'all' || filterPriority !== 'all' || filterType !== 'all';
 
+  // Colonna titles tradotti
+  const columnTitles: Record<string, string> = {
+    backlog: t('backlog'),
+    todo: t('todo'),
+    in_progress: t('in_progress'),
+    review: t('review'),
+    done: t('done'),
+  };
+
   if (!currentProject) {
     return (
       <div className="flex items-center justify-center h-96">
         <div className="text-center">
-          <p className="text-gray-500 mb-4">Seleziona un progetto per visualizzare la board</p>
+          <p className="text-gray-500 mb-4">{t('seleziona_progetto_board')}</p>
         </div>
       </div>
     );
@@ -128,12 +138,12 @@ export function KanbanBoard() {
             <DialogTrigger asChild>
               <Button>
                 <Plus className="w-4 h-4 mr-2" />
-                Nuovo Ticket
+                {t('nuovo_ticket')}
               </Button>
             </DialogTrigger>
             <DialogContent className="max-w-lg">
               <DialogHeader>
-                <DialogTitle>Crea Nuovo Ticket</DialogTitle>
+                <DialogTitle>{t('crea_nuovo_ticket')}</DialogTitle>
               </DialogHeader>
               <CreateTicketForm onSuccess={() => setIsCreateOpen(false)} />
             </DialogContent>
@@ -145,7 +155,7 @@ export function KanbanBoard() {
           <div className="relative flex-1 min-w-64">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
             <Input
-              placeholder="Cerca ticket..."
+              placeholder={t('cerca_ticket')}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="pl-10"
@@ -155,11 +165,11 @@ export function KanbanBoard() {
           <Select value={filterAssignee} onValueChange={setFilterAssignee}>
             <SelectTrigger className="w-40">
               <Filter className="w-4 h-4 mr-2" />
-              <SelectValue placeholder="Assegnatario" />
+              <SelectValue placeholder={t('assegnatario')} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">Tutti gli assegnatari</SelectItem>
-              <SelectItem value="unassigned">Non assegnato</SelectItem>
+              <SelectItem value="all">{t('tutti_assegnatari')}</SelectItem>
+              <SelectItem value="unassigned">{t('non_assegnato')}</SelectItem>
               {users.map((user) => (
                 <SelectItem key={user.id} value={user.id}>
                   {user.name}
@@ -170,33 +180,33 @@ export function KanbanBoard() {
 
           <Select value={filterPriority} onValueChange={setFilterPriority}>
             <SelectTrigger className="w-36">
-              <SelectValue placeholder="Priorità" />
+              <SelectValue placeholder={t('priorita')} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">Tutte le priorità</SelectItem>
-              <SelectItem value="low">Bassa</SelectItem>
-              <SelectItem value="medium">Media</SelectItem>
-              <SelectItem value="high">Alta</SelectItem>
-              <SelectItem value="critical">Critica</SelectItem>
+              <SelectItem value="all">{t('tutte_priorita')}</SelectItem>
+              <SelectItem value="low">{t('priorita_bassa')}</SelectItem>
+              <SelectItem value="medium">{t('priorita_media')}</SelectItem>
+              <SelectItem value="high">{t('priorita_alta')}</SelectItem>
+              <SelectItem value="critical">{t('priorita_critica')}</SelectItem>
             </SelectContent>
           </Select>
 
           <Select value={filterType} onValueChange={setFilterType}>
             <SelectTrigger className="w-36">
-              <SelectValue placeholder="Tipo" />
+              <SelectValue placeholder={t('tipo')} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">Tutti i tipi</SelectItem>
-              <SelectItem value="bug">Bug</SelectItem>
-              <SelectItem value="feature">Feature</SelectItem>
-              <SelectItem value="task">Task</SelectItem>
-              <SelectItem value="improvement">Miglioramento</SelectItem>
+              <SelectItem value="all">{t('tutti_tipi')}</SelectItem>
+              <SelectItem value="bug">{t('tipo_bug')}</SelectItem>
+              <SelectItem value="feature">{t('tipo_feature')}</SelectItem>
+              <SelectItem value="task">{t('tipo_task')}</SelectItem>
+              <SelectItem value="improvement">{t('tipo_miglioramento')}</SelectItem>
             </SelectContent>
           </Select>
 
           {hasFilters && (
             <Button variant="ghost" size="sm" onClick={clearFilters}>
-              Cancella filtri
+              {t('cancella_filtri')}
             </Button>
           )}
         </div>
@@ -220,7 +230,7 @@ export function KanbanBoard() {
                     className="w-3 h-3 rounded-full"
                     style={{ backgroundColor: column.color }}
                   />
-                  <span className="font-semibold text-sm">{column.title}</span>
+                  <span className="font-semibold text-sm">{columnTitles[column.id]}</span>
                   <span className="text-xs text-gray-500 bg-gray-200 px-2 py-0.5 rounded-full">
                     {ticketsByColumn[column.id].length}
                   </span>
@@ -245,7 +255,7 @@ export function KanbanBoard() {
 
                     {ticketsByColumn[column.id].length === 0 && (
                       <div className="text-center py-8 text-gray-400 text-sm">
-                        Nessun ticket
+                        {t('nessun_ticket')}
                       </div>
                     )}
                   </div>

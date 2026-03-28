@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   LayoutDashboard,
   Kanban,
@@ -36,6 +37,7 @@ interface SidebarProps {
 }
 
 export function Sidebar({ currentView, onViewChange }: SidebarProps) {
+  const { t } = useTranslation();
   const { projects, currentProjectId, currentUser, setCurrentProject, addProject, setCurrentUser } = useStore();
   const [isCreateProjectOpen, setIsCreateProjectOpen] = useState(false);
   const [newProjectName, setNewProjectName] = useState('');
@@ -66,10 +68,10 @@ export function Sidebar({ currentView, onViewChange }: SidebarProps) {
   };
 
   const navItems = [
-    { id: 'dashboard' as View, label: 'Dashboard', icon: LayoutDashboard },
-    { id: 'board' as View, label: 'Board', icon: Kanban },
-    { id: 'projects' as View, label: 'Progetti', icon: FolderKanban },
-    { id: 'team' as View, label: 'Team', icon: Users },
+    { id: 'dashboard' as View, label: t('dashboard'), icon: LayoutDashboard },
+    { id: 'board' as View, label: t('board'), icon: Kanban },
+    { id: 'projects' as View, label: t('progetti'), icon: FolderKanban },
+    { id: 'team' as View, label: t('team'), icon: Users },
   ];
 
   return (
@@ -106,7 +108,7 @@ export function Sidebar({ currentView, onViewChange }: SidebarProps) {
         {/* Progetti */}
         <div className="mt-6">
           <div className="flex items-center justify-between px-3 mb-2">
-            <span className="text-xs font-semibold text-gray-500 uppercase">Progetti</span>
+            <span className="text-xs font-semibold text-gray-500 uppercase">{t('progetti')}</span>
             <Dialog open={isCreateProjectOpen} onOpenChange={setIsCreateProjectOpen}>
               <DialogTrigger asChild>
                 <Button variant="ghost" size="icon" className="h-5 w-5 text-gray-400 hover:text-white">
@@ -115,21 +117,21 @@ export function Sidebar({ currentView, onViewChange }: SidebarProps) {
               </DialogTrigger>
               <DialogContent>
                 <DialogHeader>
-                  <DialogTitle>Crea Nuovo Progetto</DialogTitle>
+                  <DialogTitle>{t('crea_nuovo_progetto')}</DialogTitle>
                 </DialogHeader>
                 <form onSubmit={handleCreateProject} className="space-y-4">
                   <div>
-                    <Label htmlFor="name">Nome *</Label>
+                    <Label htmlFor="name">{t('nome_progetto')} *</Label>
                     <Input
                       id="name"
                       value={newProjectName}
                       onChange={(e) => setNewProjectName(e.target.value)}
-                      placeholder="Es: Sito Web"
+                      placeholder={t('esempio_sito_web')}
                       required
                     />
                   </div>
                   <div>
-                    <Label htmlFor="key">Key * (univoca)</Label>
+                    <Label htmlFor="key">{t('key_progetto')} * ({t('univoca')})</Label>
                     <Input
                       id="key"
                       value={newProjectKey}
@@ -140,20 +142,20 @@ export function Sidebar({ currentView, onViewChange }: SidebarProps) {
                     />
                   </div>
                   <div>
-                    <Label htmlFor="description">Descrizione</Label>
+                    <Label htmlFor="description">{t('descrizione')}</Label>
                     <Textarea
                       id="description"
                       value={newProjectDesc}
                       onChange={(e) => setNewProjectDesc(e.target.value)}
-                      placeholder="Descrivi il progetto"
+                      placeholder={t('descrivi_progetto')}
                     />
                   </div>
                   <div className="flex justify-end gap-3">
                     <Button type="button" variant="outline" onClick={() => setIsCreateProjectOpen(false)}>
-                      Annulla
+                      {t('annulla')}
                     </Button>
                     <Button type="submit" disabled={!newProjectName.trim() || !newProjectKey.trim()}>
-                      Crea Progetto
+                      {t('crea_progetto')}
                     </Button>
                   </div>
                 </form>
@@ -208,7 +210,7 @@ export function Sidebar({ currentView, onViewChange }: SidebarProps) {
                 )}
                 <div className="flex-1 text-left">
                   <p className="text-sm font-medium">{currentUser.name}</p>
-                  <p className="text-xs text-gray-500 capitalize">{currentUser.role}</p>
+                  <p className="text-xs text-gray-500 capitalize">{t(currentUser.role)}</p>
                 </div>
                 <ChevronDown className="w-4 h-4 text-gray-500" />
               </button>
@@ -216,18 +218,18 @@ export function Sidebar({ currentView, onViewChange }: SidebarProps) {
             <DropdownMenuContent align="end" className="w-56">
               <DropdownMenuItem onClick={() => onViewChange('settings')}>
                 <Settings className="w-4 h-4 mr-2" />
-                Impostazioni
+                {t('impostazioni')}
               </DropdownMenuItem>
               <DropdownMenuItem onClick={handleLogout} className="text-red-600">
                 <LogOut className="w-4 h-4 mr-2" />
-                Logout
+                {t('logout')}
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         ) : (
           <Button variant="outline" className="w-full" onClick={() => onViewChange('settings')}>
             <User className="w-4 h-4 mr-2" />
-            Accedi
+            {t('accedi')}
           </Button>
         )}
       </div>

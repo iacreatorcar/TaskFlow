@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Draggable } from '@hello-pangea/dnd';
 import { 
   Calendar, 
@@ -45,6 +46,7 @@ const typeIconsMap = {
 };
 
 export function TicketCard({ ticket, index }: TicketCardProps) {
+  const { t, i18n } = useTranslation();
   const [isDetailOpen, setIsDetailOpen] = useState(false);
   const { users, deleteTicket, getCommentsByTicket } = useStore();
 
@@ -54,7 +56,7 @@ export function TicketCard({ ticket, index }: TicketCardProps) {
 
   const handleDelete = (e: React.MouseEvent) => {
     e.stopPropagation();
-    if (confirm('Sei sicuro di voler eliminare questo ticket?')) {
+    if (confirm(t('confirm_delete_ticket'))) {
       deleteTicket(ticket.id);
     }
   };
@@ -62,7 +64,30 @@ export function TicketCard({ ticket, index }: TicketCardProps) {
   const formatDate = (dateString?: string) => {
     if (!dateString) return '';
     const date = new Date(dateString);
-    return date.toLocaleDateString('it-IT', { day: 'numeric', month: 'short' });
+    const locale = i18n.language === 'it' ? 'it-IT' : 'en-US';
+    return date.toLocaleDateString(locale, { day: 'numeric', month: 'short' });
+  };
+
+  // Mappa per le priorità tradotte
+  const getPriorityLabel = (priority: string) => {
+    const labels: Record<string, string> = {
+      low: t('priorita_bassa'),
+      medium: t('priorita_media'),
+      high: t('priorita_alta'),
+      critical: t('priorita_critica'),
+    };
+    return labels[priority] || priority;
+  };
+
+  // Mappa per i tipi tradotti
+  const getTypeLabel = (type: string) => {
+    const labels: Record<string, string> = {
+      bug: t('tipo_bug'),
+      feature: t('tipo_feature'),
+      task: t('tipo_task'),
+      improvement: t('tipo_miglioramento'),
+    };
+    return labels[type] || type;
   };
 
   return (
@@ -86,7 +111,9 @@ export function TicketCard({ ticket, index }: TicketCardProps) {
             {/* Header con tipo e priorità */}
             <div className="flex items-center justify-between mb-2">
               <div className="flex items-center gap-1.5">
-                <span className="text-gray-500">{typeIconsMap[ticket.type]}</span>
+                <span className="text-gray-500" title={getTypeLabel(ticket.type)}>
+                  {typeIconsMap[ticket.type]}
+                </span>
                 <span className="text-xs text-gray-500 font-medium">
                   {ticket.projectId.slice(0, 4).toUpperCase()}-{ticket.id.slice(0, 4).toUpperCase()}
                 </span>
@@ -100,7 +127,7 @@ export function TicketCard({ ticket, index }: TicketCardProps) {
                   }}
                 >
                   {priorityIcons[ticket.priority]}
-                  <span className="capitalize">{ticket.priority}</span>
+                  <span className="capitalize">{getPriorityLabel(ticket.priority)}</span>
                 </div>
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
@@ -110,10 +137,10 @@ export function TicketCard({ ticket, index }: TicketCardProps) {
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end">
                     <DropdownMenuItem onClick={() => setIsDetailOpen(true)}>
-                      Modifica
+                      {t('modifica')}
                     </DropdownMenuItem>
                     <DropdownMenuItem onClick={handleDelete} className="text-red-600">
-                      Elimina
+                      {t('elimina')}
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
@@ -141,7 +168,7 @@ export function TicketCard({ ticket, index }: TicketCardProps) {
               <div className="flex items-center gap-2">
                 {/* Assegnatario */}
                 {assignee ? (
-                  <div className="flex items-center gap-1">
+                  <div className="flex items-center gap-1" title={assignee.name}>
                     {assignee.avatar ? (
                       <img
                         src={assignee.avatar}
@@ -155,14 +182,14 @@ export function TicketCard({ ticket, index }: TicketCardProps) {
                     )}
                   </div>
                 ) : (
-                  <div className="w-5 h-5 rounded-full bg-gray-100 flex items-center justify-center">
+                  <div className="w-5 h-5 rounded-full bg-gray-100 flex items-center justify-center" title={t('non_assegnato')}>
                     <User className="w-3 h-3 text-gray-400" />
                   </div>
                 )}
 
                 {/* Commenti */}
                 {comments.length > 0 && (
-                  <div className="flex items-center gap-0.5">
+                  <div className="flex items-center gap-0.5" title={`${comments.length} ${t('commenti')}`}>
                     <MessageSquare className="w-3 h-3" />
                     <span>{comments.length}</span>
                   </div>
@@ -172,7 +199,7 @@ export function TicketCard({ ticket, index }: TicketCardProps) {
               <div className="flex items-center gap-2">
                 {/* Ore stimate */}
                 {ticket.estimatedHours && (
-                  <div className="flex items-center gap-0.5">
+                  <div className="flex items-center gap-0.5" title={t('ore_stimate')}>
                     <Clock className="w-3 h-3" />
                     <span>{ticket.estimatedHours}h</span>
                   </div>
@@ -180,7 +207,7 @@ export function TicketCard({ ticket, index }: TicketCardProps) {
 
                 {/* Data scadenza */}
                 {ticket.dueDate && (
-                  <div className="flex items-center gap-0.5 text-orange-600">
+                  <div className="flex items-center gap-0.5 text-orange-600" title={t('data_scadenza')}>
                     <Calendar className="w-3 h-3" />
                     <span>{formatDate(ticket.dueDate)}</span>
                   </div>
