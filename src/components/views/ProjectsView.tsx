@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { FolderOpen, Plus, Edit2, Trash2, Users, Calendar } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -25,6 +26,7 @@ import {
 import { useStore } from '@/store/useStore';
 
 export function ProjectsView() {
+  const { t } = useTranslation();
   const { projects, tickets, addProject, updateProject, deleteProject, setCurrentProject } = useStore();
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [editingProject, setEditingProject] = useState<string | null>(null);
@@ -100,53 +102,53 @@ export function ProjectsView() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Progetti</h1>
-          <p className="text-gray-500 text-sm">Gestisci i tuoi progetti</p>
+          <h1 className="text-2xl font-bold text-gray-900">{t('progetti')}</h1>
+          <p className="text-gray-500 text-sm">{t('gestisci_progetti')}</p>
         </div>
         <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
           <DialogTrigger asChild>
             <Button>
               <Plus className="w-4 h-4 mr-2" />
-              Nuovo Progetto
+              {t('nuovo_progetto')}
             </Button>
           </DialogTrigger>
           <DialogContent>
             <DialogHeader>
-              <DialogTitle>Crea Nuovo Progetto</DialogTitle>
+              <DialogTitle>{t('crea_nuovo_progetto')}</DialogTitle>
             </DialogHeader>
             <form onSubmit={handleCreate} className="space-y-4">
               <div>
-                <Label htmlFor="name">Nome *</Label>
+                <Label htmlFor="name">{t('nome')} *</Label>
                 <Input
                   id="name"
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  placeholder="Es: Sito Web"
+                  placeholder={t('esempio_sito_web')}
                   required
                 />
               </div>
               <div>
-                <Label htmlFor="key">Key * (univoca, max 5 caratteri)</Label>
+                <Label htmlFor="key">{t('key_univoca_hint')}</Label>
                 <Input
                   id="key"
                   value={formData.key}
                   onChange={(e) => setFormData({ ...formData, key: e.target.value.toUpperCase() })}
-                  placeholder="Es: WEB"
+                  placeholder={t('esempio_web')}
                   maxLength={5}
                   required
                 />
               </div>
               <div>
-                <Label htmlFor="description">Descrizione</Label>
+                <Label htmlFor="description">{t('descrizione')}</Label>
                 <Textarea
                   id="description"
                   value={formData.description}
                   onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                  placeholder="Descrivi il progetto"
+                  placeholder={t('descrivi_progetto')}
                 />
               </div>
               <div>
-                <Label>Colore</Label>
+                <Label>{t('colore')}</Label>
                 <div className="flex flex-wrap gap-2 mt-2">
                   {colors.map((color) => (
                     <button
@@ -163,10 +165,10 @@ export function ProjectsView() {
               </div>
               <div className="flex justify-end gap-3">
                 <Button type="button" variant="outline" onClick={() => setIsCreateOpen(false)}>
-                  Annulla
+                  {t('annulla')}
                 </Button>
                 <Button type="submit" disabled={!formData.name.trim() || !formData.key.trim()}>
-                  Crea Progetto
+                  {t('crea_progetto')}
                 </Button>
               </div>
             </form>
@@ -210,20 +212,20 @@ export function ProjectsView() {
               </CardHeader>
               <CardContent>
                 <p className="text-sm text-gray-600 mb-4 line-clamp-2">
-                  {project.description || 'Nessuna descrizione'}
+                  {project.description || t('nessuna_descrizione')}
                 </p>
                 <div className="flex items-center gap-4 text-sm text-gray-500">
                   <div className="flex items-center gap-1">
                     <FolderOpen className="w-4 h-4" />
-                    <span>{stats.total} ticket</span>
+                    <span>{stats.total} {t('ticket').toLowerCase()}</span>
                   </div>
                   <div className="flex items-center gap-1">
                     <Users className="w-4 h-4" />
-                    <span>{stats.members} membri</span>
+                    <span>{stats.members} {t('membri').toLowerCase()}</span>
                   </div>
                   <div className="flex items-center gap-1">
                     <Calendar className="w-4 h-4" />
-                    <span>{stats.done} completati</span>
+                    <span>{stats.done} {t('completati').toLowerCase()}</span>
                   </div>
                 </div>
                 <Button
@@ -231,7 +233,7 @@ export function ProjectsView() {
                   className="w-full mt-4"
                   onClick={() => setCurrentProject(project.id)}
                 >
-                  Apri Progetto
+                  {t('apri_progetto')}
                 </Button>
               </CardContent>
             </Card>
@@ -243,11 +245,11 @@ export function ProjectsView() {
       <Dialog open={!!editingProject} onOpenChange={() => setEditingProject(null)}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Modifica Progetto</DialogTitle>
+            <DialogTitle>{t('modifica_progetto')}</DialogTitle>
           </DialogHeader>
           <form onSubmit={handleUpdate} className="space-y-4">
             <div>
-              <Label htmlFor="edit-name">Nome</Label>
+              <Label htmlFor="edit-name">{t('nome')}</Label>
               <Input
                 id="edit-name"
                 value={formData.name}
@@ -256,7 +258,7 @@ export function ProjectsView() {
               />
             </div>
             <div>
-              <Label htmlFor="edit-desc">Descrizione</Label>
+              <Label htmlFor="edit-desc">{t('descrizione')}</Label>
               <Textarea
                 id="edit-desc"
                 value={formData.description}
@@ -264,7 +266,7 @@ export function ProjectsView() {
               />
             </div>
             <div>
-              <Label>Colore</Label>
+              <Label>{t('colore')}</Label>
               <div className="flex flex-wrap gap-2 mt-2">
                 {colors.map((color) => (
                   <button
@@ -281,9 +283,9 @@ export function ProjectsView() {
             </div>
             <div className="flex justify-end gap-3">
               <Button type="button" variant="outline" onClick={() => setEditingProject(null)}>
-                Annulla
+                {t('annulla')}
               </Button>
-              <Button type="submit">Salva Modifiche</Button>
+              <Button type="submit">{t('salva_modifiche')}</Button>
             </div>
           </form>
         </DialogContent>
@@ -293,16 +295,15 @@ export function ProjectsView() {
       <AlertDialog open={!!deletingProject} onOpenChange={() => setDeletingProject(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Elimina Progetto</AlertDialogTitle>
+            <AlertDialogTitle>{t('elimina_progetto')}</AlertDialogTitle>
             <AlertDialogDescription>
-              Sei sicuro di voler eliminare questo progetto? Verranno eliminati anche tutti i ticket associati.
-              Questa azione non può essere annullata.
+              {t('confirm_delete_progetto')}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Annulla</AlertDialogCancel>
+            <AlertDialogCancel>{t('annulla')}</AlertDialogCancel>
             <AlertDialogAction onClick={handleDelete} className="bg-red-600 hover:bg-red-700">
-              Elimina
+              {t('elimina')}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

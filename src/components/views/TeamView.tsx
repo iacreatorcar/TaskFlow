@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Plus, Mail, Trash2, Edit2 } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -28,17 +29,11 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { getInitials } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
 import { useStore } from '@/store/useStore';
 import type { User } from '@/types';
-
-const roleLabels: Record<User['role'], string> = {
-  admin: 'Amministratore',
-  developer: 'Sviluppatore',
-  tester: 'Tester',
-  viewer: 'Osservatore',
-};
 
 const roleColors: Record<User['role'], string> = {
   admin: 'bg-red-100 text-red-800',
@@ -48,6 +43,7 @@ const roleColors: Record<User['role'], string> = {
 };
 
 export function TeamView() {
+  const { t } = useTranslation();
   const { users, addUser, updateUser, deleteUser, currentUser } = useStore();
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [editingUser, setEditingUser] = useState<string | null>(null);
@@ -67,7 +63,6 @@ export function TeamView() {
       name: formData.name.trim(),
       email: formData.email.trim(),
       role: formData.role,
-      avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${formData.name}`,
     });
 
     setIsCreateOpen(false);
@@ -108,24 +103,24 @@ export function TeamView() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Team</h1>
-          <p className="text-gray-500 text-sm">Gestisci i membri del tuo team</p>
+          <h1 className="text-2xl font-bold text-gray-900">{t('team')}</h1>
+          <p className="text-gray-500 text-sm">{t('gestisci_team')}</p>
         </div>
         {isAdmin && (
           <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
             <DialogTrigger asChild>
               <Button>
                 <Plus className="w-4 h-4 mr-2" />
-                Aggiungi Membro
+                {t('aggiungi_membro')}
               </Button>
             </DialogTrigger>
             <DialogContent>
               <DialogHeader>
-                <DialogTitle>Aggiungi Nuovo Membro</DialogTitle>
+                <DialogTitle>{t('aggiungi_nuovo_membro')}</DialogTitle>
               </DialogHeader>
               <form onSubmit={handleCreate} className="space-y-4">
                 <div>
-                  <Label htmlFor="name">Nome *</Label>
+                  <Label htmlFor="name">{t('nome')} *</Label>
                   <Input
                     id="name"
                     value={formData.name}
@@ -146,7 +141,7 @@ export function TeamView() {
                   />
                 </div>
                 <div>
-                  <Label htmlFor="role">Ruolo</Label>
+                  <Label htmlFor="role">{t('ruolo')}</Label>
                   <Select
                     value={formData.role}
                     onValueChange={(v) => setFormData({ ...formData, role: v as User['role'] })}
@@ -155,19 +150,19 @@ export function TeamView() {
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="admin">Amministratore</SelectItem>
-                      <SelectItem value="developer">Sviluppatore</SelectItem>
-                      <SelectItem value="tester">Tester</SelectItem>
-                      <SelectItem value="viewer">Osservatore</SelectItem>
+                      <SelectItem value="admin">{t('admin')}</SelectItem>
+                      <SelectItem value="developer">{t('developer')}</SelectItem>
+                      <SelectItem value="tester">{t('tester')}</SelectItem>
+                      <SelectItem value="viewer">{t('viewer')}</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
                 <div className="flex justify-end gap-3">
                   <Button type="button" variant="outline" onClick={() => setIsCreateOpen(false)}>
-                    Annulla
+                    {t('annulla')}
                   </Button>
                   <Button type="submit" disabled={!formData.name.trim() || !formData.email.trim()}>
-                    Aggiungi Membro
+                    {t('aggiungi_membro')}
                   </Button>
                 </div>
               </form>
@@ -183,8 +178,7 @@ export function TeamView() {
               <div className="flex items-start justify-between">
                 <div className="flex items-center gap-4">
                   <Avatar className="w-14 h-14">
-                    <AvatarImage src={user.avatar} />
-                    <AvatarFallback className="text-lg">{user.name[0]}</AvatarFallback>
+                    <AvatarFallback className="text-lg">{getInitials(user.name)}</AvatarFallback>
                   </Avatar>
                   <div>
                     <h3 className="font-semibold text-lg">{user.name}</h3>
@@ -193,7 +187,7 @@ export function TeamView() {
                       <span>{user.email}</span>
                     </div>
                     <Badge className={`mt-2 ${roleColors[user.role]}`}>
-                      {roleLabels[user.role]}
+                      {t(user.role)}
                     </Badge>
                   </div>
                 </div>
@@ -222,11 +216,11 @@ export function TeamView() {
       <Dialog open={!!editingUser} onOpenChange={() => setEditingUser(null)}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Modifica Membro</DialogTitle>
+            <DialogTitle>{t('modifica_membro')}</DialogTitle>
           </DialogHeader>
           <form onSubmit={handleUpdate} className="space-y-4">
             <div>
-              <Label htmlFor="edit-name">Nome</Label>
+              <Label htmlFor="edit-name">{t('nome')}</Label>
               <Input
                 id="edit-name"
                 value={formData.name}
@@ -245,7 +239,7 @@ export function TeamView() {
               />
             </div>
             <div>
-              <Label htmlFor="edit-role">Ruolo</Label>
+              <Label htmlFor="edit-role">{t('ruolo')}</Label>
               <Select
                 value={formData.role}
                 onValueChange={(v) => setFormData({ ...formData, role: v as User['role'] })}
@@ -254,18 +248,18 @@ export function TeamView() {
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="admin">Amministratore</SelectItem>
-                  <SelectItem value="developer">Sviluppatore</SelectItem>
-                  <SelectItem value="tester">Tester</SelectItem>
-                  <SelectItem value="viewer">Osservatore</SelectItem>
+                  <SelectItem value="admin">{t('admin')}</SelectItem>
+                  <SelectItem value="developer">{t('developer')}</SelectItem>
+                  <SelectItem value="tester">{t('tester')}</SelectItem>
+                  <SelectItem value="viewer">{t('viewer')}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
             <div className="flex justify-end gap-3">
               <Button type="button" variant="outline" onClick={() => setEditingUser(null)}>
-                Annulla
+                {t('annulla')}
               </Button>
-              <Button type="submit">Salva Modifiche</Button>
+              <Button type="submit">{t('salva_modifiche')}</Button>
             </div>
           </form>
         </DialogContent>
@@ -275,16 +269,15 @@ export function TeamView() {
       <AlertDialog open={!!deletingUser} onOpenChange={() => setDeletingUser(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Elimina Membro</AlertDialogTitle>
+            <AlertDialogTitle>{t('elimina_membro')}</AlertDialogTitle>
             <AlertDialogDescription>
-              Sei sicuro di voler eliminare questo membro dal team?
-              Questa azione non può essere annullata.
+              {t('confirm_delete_membro')}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Annulla</AlertDialogCancel>
+            <AlertDialogCancel>{t('annulla')}</AlertDialogCancel>
             <AlertDialogAction onClick={handleDelete} className="bg-red-600 hover:bg-red-700">
-              Elimina
+              {t('elimina')}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

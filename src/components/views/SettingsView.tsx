@@ -1,15 +1,18 @@
 import { useState } from 'react';
 import { User, Bell, Shield, Save } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Switch } from '@/components/ui/switch';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { getInitials } from '@/lib/utils';
 import { useStore } from '@/store/useStore';
 
 export function SettingsView() {
+  const { t } = useTranslation();
   const { currentUser, updateUser } = useStore();
   const [profileData, setProfileData] = useState({
     name: currentUser?.name || '',
@@ -36,7 +39,7 @@ export function SettingsView() {
   if (!currentUser) {
     return (
       <div className="flex items-center justify-center h-96">
-        <p className="text-gray-500">Effettua il login per accedere alle impostazioni</p>
+        <p className="text-gray-500">{t('login_per_impostazioni')}</p>
       </div>
     );
   }
@@ -44,51 +47,50 @@ export function SettingsView() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-gray-900">Impostazioni</h1>
-        <p className="text-gray-500 text-sm">Gestisci le preferenze del tuo account</p>
+        <h1 className="text-2xl font-bold text-gray-900">{t('impostazioni')}</h1>
+        <p className="text-gray-500 text-sm">{t('gestisci_preferenze')}</p>
       </div>
 
       <Tabs defaultValue="profile" className="w-full">
         <TabsList className="mb-6">
           <TabsTrigger value="profile">
             <User className="w-4 h-4 mr-2" />
-            Profilo
+            {t('profilo')}
           </TabsTrigger>
           <TabsTrigger value="notifications">
             <Bell className="w-4 h-4 mr-2" />
-            Notifiche
+            {t('notifiche')}
           </TabsTrigger>
           <TabsTrigger value="security">
             <Shield className="w-4 h-4 mr-2" />
-            Sicurezza
+            {t('sicurezza')}
           </TabsTrigger>
         </TabsList>
 
         <TabsContent value="profile" className="space-y-6">
           <Card>
             <CardHeader>
-              <CardTitle>Informazioni Profilo</CardTitle>
+              <CardTitle>{t('informazioni_profilo')}</CardTitle>
             </CardHeader>
             <CardContent>
               <form onSubmit={handleSaveProfile} className="space-y-6">
                 <div className="flex items-center gap-6">
                   <Avatar className="w-20 h-20">
-                    <AvatarImage src={currentUser.avatar} />
-                    <AvatarFallback className="text-2xl">{currentUser.name[0]}</AvatarFallback>
+                    <AvatarFallback className="text-2xl">{getInitials(currentUser.name)}</AvatarFallback>
                   </Avatar>
                   <div>
                     <Button type="button" variant="outline">
-                      Cambia Avatar
+                      {t('cambia_avatar')}
                     </Button>
                     <p className="text-sm text-gray-500 mt-2">
-                      JPG, PNG o GIF. Max 2MB.
+                      {t('avatar_formato')}
                     </p>
                   </div>
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <Label htmlFor="name">Nome</Label>
+                    <Label htmlFor="name">{t('nome')}</Label>
                     <Input
                       id="name"
                       value={profileData.name}
@@ -107,17 +109,17 @@ export function SettingsView() {
                 </div>
 
                 <div>
-                  <Label htmlFor="role">Ruolo</Label>
-                  <Input id="role" value={currentUser.role} disabled />
+                  <Label htmlFor="role">{t('ruolo')}</Label>
+                  <Input id="role" value={t(currentUser.role)} disabled />
                   <p className="text-sm text-gray-500 mt-1">
-                    Il ruolo può essere modificato solo dagli amministratori.
+                    {t('ruolo_solo_admin')}
                   </p>
                 </div>
 
                 <div className="flex justify-end">
                   <Button type="submit">
                     <Save className="w-4 h-4 mr-2" />
-                    Salva Modifiche
+                    {t('salva_modifiche')}
                   </Button>
                 </div>
               </form>
@@ -128,13 +130,13 @@ export function SettingsView() {
         <TabsContent value="notifications" className="space-y-6">
           <Card>
             <CardHeader>
-              <CardTitle>Preferenze Notifiche</CardTitle>
+              <CardTitle>{t('preferenze_notifiche')}</CardTitle>
             </CardHeader>
             <CardContent className="space-y-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="font-medium">Notifiche Email</p>
-                  <p className="text-sm text-gray-500">Ricevi aggiornamenti via email</p>
+                  <p className="font-medium">{t('notifiche_email')}</p>
+                  <p className="text-sm text-gray-500">{t('ricevi_aggiornamenti_email')}</p>
                 </div>
                 <Switch
                   checked={notifications.email}
@@ -146,8 +148,8 @@ export function SettingsView() {
 
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="font-medium">Notifiche Push</p>
-                  <p className="text-sm text-gray-500">Ricevi notifiche push nel browser</p>
+                  <p className="font-medium">{t('notifiche_push')}</p>
+                  <p className="text-sm text-gray-500">{t('ricevi_notifiche_push')}</p>
                 </div>
                 <Switch
                   checked={notifications.push}
@@ -159,8 +161,8 @@ export function SettingsView() {
 
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="font-medium">Menzioni</p>
-                  <p className="text-sm text-gray-500">Notifica quando vieni menzionato</p>
+                  <p className="font-medium">{t('menzioni')}</p>
+                  <p className="text-sm text-gray-500">{t('notifica_menzioni')}</p>
                 </div>
                 <Switch
                   checked={notifications.mentions}
@@ -172,8 +174,8 @@ export function SettingsView() {
 
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="font-medium">Aggiornamenti Progetto</p>
-                  <p className="text-sm text-gray-500">Notifica aggiornamenti sui progetti</p>
+                  <p className="font-medium">{t('aggiornamenti_progetto')}</p>
+                  <p className="text-sm text-gray-500">{t('notifica_aggiornamenti')}</p>
                 </div>
                 <Switch
                   checked={notifications.updates}
@@ -189,43 +191,43 @@ export function SettingsView() {
         <TabsContent value="security" className="space-y-6">
           <Card>
             <CardHeader>
-              <CardTitle>Sicurezza Account</CardTitle>
+              <CardTitle>{t('sicurezza_account')}</CardTitle>
             </CardHeader>
             <CardContent className="space-y-6">
               <div>
-                <Label htmlFor="current-password">Password Attuale</Label>
+                <Label htmlFor="current-password">{t('password_attuale')}</Label>
                 <Input id="current-password" type="password" placeholder="••••••••" />
               </div>
 
               <div>
-                <Label htmlFor="new-password">Nuova Password</Label>
+                <Label htmlFor="new-password">{t('nuova_password')}</Label>
                 <Input id="new-password" type="password" placeholder="••••••••" />
               </div>
 
               <div>
-                <Label htmlFor="confirm-password">Conferma Password</Label>
+                <Label htmlFor="confirm-password">{t('conferma_password')}</Label>
                 <Input id="confirm-password" type="password" placeholder="••••••••" />
               </div>
 
               <div className="flex justify-end">
-                <Button>Aggiorna Password</Button>
+                <Button>{t('aggiorna_password')}</Button>
               </div>
             </CardContent>
           </Card>
 
           <Card>
             <CardHeader>
-              <CardTitle className="text-red-600">Zona Pericolosa</CardTitle>
+              <CardTitle className="text-red-600">{t('zona_pericolosa')}</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="font-medium">Elimina Account</p>
+                  <p className="font-medium">{t('elimina_account')}</p>
                   <p className="text-sm text-gray-500">
-                    Elimina permanentemente il tuo account e tutti i dati associati
+                    {t('elimina_account_desc')}
                   </p>
                 </div>
-                <Button variant="destructive">Elimina Account</Button>
+                <Button variant="destructive">{t('elimina_account')}</Button>
               </div>
             </CardContent>
           </Card>

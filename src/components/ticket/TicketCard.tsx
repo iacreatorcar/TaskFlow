@@ -1,11 +1,11 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Draggable } from '@hello-pangea/dnd';
-import { 
-  Calendar, 
-  Clock, 
-  MessageSquare, 
-  MoreHorizontal, 
+import {
+  Calendar,
+  Clock,
+  MessageSquare,
+  MoreHorizontal,
   AlertCircle,
   Bug,
   Sparkles,
@@ -13,6 +13,7 @@ import {
   Zap,
   User
 } from 'lucide-react';
+import { getInitials } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
@@ -46,7 +47,7 @@ const typeIconsMap = {
 };
 
 export function TicketCard({ ticket, index }: TicketCardProps) {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const [isDetailOpen, setIsDetailOpen] = useState(false);
   const { users, deleteTicket, getCommentsByTicket } = useStore();
 
@@ -64,7 +65,7 @@ export function TicketCard({ ticket, index }: TicketCardProps) {
   const formatDate = (dateString?: string) => {
     if (!dateString) return '';
     const date = new Date(dateString);
-    const locale = i18n.language === 'it' ? 'it-IT' : 'en-US';
+    const locale = 'it-IT';
     return date.toLocaleDateString(locale, { day: 'numeric', month: 'short' });
   };
 
@@ -168,18 +169,12 @@ export function TicketCard({ ticket, index }: TicketCardProps) {
               <div className="flex items-center gap-2">
                 {/* Assegnatario */}
                 {assignee ? (
-                  <div className="flex items-center gap-1" title={assignee.name}>
-                    {assignee.avatar ? (
-                      <img
-                        src={assignee.avatar}
-                        alt={assignee.name}
-                        className="w-5 h-5 rounded-full"
-                      />
-                    ) : (
-                      <div className="w-5 h-5 rounded-full bg-gray-200 flex items-center justify-center">
-                        <User className="w-3 h-3" />
-                      </div>
-                    )}
+                  <div
+                    className="w-5 h-5 rounded-full bg-blue-100 flex items-center justify-center text-blue-700 font-semibold"
+                    style={{ fontSize: '8px' }}
+                    title={assignee.name}
+                  >
+                    {getInitials(assignee.name)}
                   </div>
                 ) : (
                   <div className="w-5 h-5 rounded-full bg-gray-100 flex items-center justify-center" title={t('non_assegnato')}>

@@ -283,28 +283,24 @@ export const useStore = create<StoreState>()(
           name: 'Mario Rossi',
           email: 'mario.rossi@example.com',
           role: 'admin',
-          avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Mario',
         });
 
         const dev1Id = state.addUser({
           name: 'Laura Bianchi',
           email: 'laura.bianchi@example.com',
           role: 'developer',
-          avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Laura',
         });
 
         const dev2Id = state.addUser({
           name: 'Giuseppe Verdi',
           email: 'giuseppe.verdi@example.com',
           role: 'developer',
-          avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Giuseppe',
         });
 
         const testerId = state.addUser({
           name: 'Anna Neri',
           email: 'anna.neri@example.com',
           role: 'tester',
-          avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Anna',
         });
 
         state.setCurrentUser(state.users.find((u) => u.id === adminId) || null);
@@ -385,6 +381,7 @@ export const useStore = create<StoreState>()(
     }),
     {
       name: 'taskflow-storage',
+      version: 2,
       partialize: (state) => ({
         tickets: state.tickets,
         projects: state.projects,

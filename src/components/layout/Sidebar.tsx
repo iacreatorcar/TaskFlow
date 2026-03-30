@@ -197,17 +197,9 @@ export function Sidebar({ currentView, onViewChange }: SidebarProps) {
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <button className="w-full flex items-center gap-3 p-2 rounded-lg hover:bg-gray-800 transition-colors">
-                {currentUser.avatar ? (
-                  <img
-                    src={currentUser.avatar}
-                    alt={currentUser.name}
-                    className="w-8 h-8 rounded-full"
-                  />
-                ) : (
-                  <div className="w-8 h-8 rounded-full bg-gray-700 flex items-center justify-center">
-                    <User className="w-4 h-4" />
-                  </div>
-                )}
+                <div className="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-white text-xs font-semibold">
+                  {currentUser.name.split(' ').map((n: string) => n[0]).join('').slice(0, 2).toUpperCase()}
+                </div>
                 <div className="flex-1 text-left">
                   <p className="text-sm font-medium">{currentUser.name}</p>
                   <p className="text-xs text-gray-500 capitalize">{t(currentUser.role)}</p>

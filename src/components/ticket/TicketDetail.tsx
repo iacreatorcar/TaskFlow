@@ -20,7 +20,8 @@ import {
 } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { getInitials } from '@/lib/utils';
 import { Separator } from '@/components/ui/separator';
 import { useStore } from '@/store/useStore';
 import type { Ticket, TicketStatus, TicketPriority, TicketType } from '@/types';
@@ -57,7 +58,7 @@ const getTypeLabels = (t: (key: string) => string): Record<TicketType, string> =
 });
 
 export function TicketDetail({ ticket, open, onOpenChange }: TicketDetailProps) {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const { users, projects, updateTicket, addComment, getCommentsByTicket, getActivitiesByTicket, currentUser } = useStore();
   
   const [editedTicket, setEditedTicket] = useState<Ticket>(ticket);
@@ -108,7 +109,7 @@ export function TicketDetail({ ticket, open, onOpenChange }: TicketDetailProps) 
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
-    const locale = i18n.language === 'it' ? 'it-IT' : 'en-US';
+    const locale = 'it-IT';
     return date.toLocaleString(locale, {
       day: 'numeric',
       month: 'short',
@@ -251,8 +252,7 @@ export function TicketDetail({ ticket, open, onOpenChange }: TicketDetailProps) 
                 {currentUser && (
                   <div className="flex gap-3">
                     <Avatar className="w-8 h-8">
-                      <AvatarImage src={currentUser.avatar} />
-                      <AvatarFallback>{currentUser.name[0]}</AvatarFallback>
+                      <AvatarFallback>{getInitials(currentUser.name)}</AvatarFallback>
                     </Avatar>
                     <div className="flex-1">
                       <Textarea
@@ -282,8 +282,7 @@ export function TicketDetail({ ticket, open, onOpenChange }: TicketDetailProps) 
                       return (
                         <div key={comment.id} className="flex gap-3">
                           <Avatar className="w-8 h-8">
-                            <AvatarImage src={author?.avatar} />
-                            <AvatarFallback>{author?.name[0]}</AvatarFallback>
+                            <AvatarFallback>{author ? getInitials(author.name) : '?'}</AvatarFallback>
                           </Avatar>
                           <div className="flex-1">
                             <div className="flex items-center gap-2 mb-1">
@@ -376,8 +375,7 @@ export function TicketDetail({ ticket, open, onOpenChange }: TicketDetailProps) 
                   {assignee ? (
                     <>
                       <Avatar className="w-6 h-6">
-                        <AvatarImage src={assignee.avatar} />
-                        <AvatarFallback>{assignee.name[0]}</AvatarFallback>
+                        <AvatarFallback>{getInitials(assignee.name)}</AvatarFallback>
                       </Avatar>
                       <span className="text-sm">{assignee.name}</span>
                     </>
@@ -395,8 +393,7 @@ export function TicketDetail({ ticket, open, onOpenChange }: TicketDetailProps) 
                 {reporter && (
                   <>
                     <Avatar className="w-6 h-6">
-                      <AvatarImage src={reporter.avatar} />
-                      <AvatarFallback>{reporter.name[0]}</AvatarFallback>
+                      <AvatarFallback>{getInitials(reporter.name)}</AvatarFallback>
                     </Avatar>
                     <span className="text-sm">{reporter.name}</span>
                   </>

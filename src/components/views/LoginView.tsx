@@ -2,14 +2,15 @@ import { useState } from 'react';
 import { Kanban, User, Users } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { getInitials } from '@/lib/utils';
 import { useStore } from '@/store/useStore';
 import { useTranslation } from 'react-i18next';
 
 export function LoginView() {
   const { users, setCurrentUser } = useStore();
   const [selectedUser, setSelectedUser] = useState<string | null>(null);
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
 
   const handleLogin = () => {
     if (selectedUser) {
@@ -40,35 +41,6 @@ export function LoginView() {
           <h1 className="text-3xl font-bold text-white">TaskFlow</h1>
           <p className="text-blue-100 mt-2">{t('sistema_ticketing')}</p>
           
-          {/* Language Switcher */}
-          <div className="flex justify-center mt-4 gap-2">
-            <button
-              onClick={() => i18n.changeLanguage('it')}
-              className={`
-                flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-medium transition-all
-                ${i18n.language === 'it' 
-                  ? 'bg-white text-blue-600 shadow-md' 
-                  : 'bg-white/20 text-white hover:bg-white/30'
-                }
-              `}
-            >
-              <span className="text-base">🇮🇹</span>
-              <span>ITA</span>
-            </button>
-            <button
-              onClick={() => i18n.changeLanguage('en')}
-              className={`
-                flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-medium transition-all
-                ${i18n.language === 'en' 
-                  ? 'bg-white text-blue-600 shadow-md' 
-                  : 'bg-white/20 text-white hover:bg-white/30'
-                }
-              `}
-            >
-              <span className="text-base">🇬🇧</span>
-              <span>ENG</span>
-            </button>
-          </div>
         </div>
 
         <Card className="shadow-xl">
@@ -101,8 +73,7 @@ export function LoginView() {
                       `}
                     >
                       <Avatar className="w-12 h-12">
-                        <AvatarImage src={user.avatar} />
-                        <AvatarFallback>{user.name[0]}</AvatarFallback>
+                        <AvatarFallback>{getInitials(user.name)}</AvatarFallback>
                       </Avatar>
                       <div className="flex-1 text-left">
                         <p className="font-medium">{user.name}</p>
